@@ -1,0 +1,25 @@
+---
+title: "Bachelor's thesis from 2014"
+date: "2021-01-15"
+tags: ["thesis","Excel"]
+slug: "thesis-2014"
+output:
+ blogdown::html_page:
+  highlight: tango
+summary: A summary of my first bachelor's thesis about automation in electronics industry
+---
+
+# Introduction
+My first bachelor's thesis is a strategic analysis to increase the degree of automation in the manufacturing process of photovoltaic inverters in an industry leading company in Germany. In my study program of renewable energies I was especially interested in photovoltaics as the possibilities of implementing this technology is endless. Finally, I was able to find a good work place for researching it further. Please be aware that there is a restriction note on my thesis, so I was not able to publish it and I have to keep my descriptions short.
+
+# Research question
+My main research question was if it is possible to fully automate the manufacturing process of a set of photovolatic inverters or else give advices on how to extend it further. The underlying task was to replace as much as THT parts as possible so that the manufacturing process can be made simpler. The results of my analysis potentially could lead to a cost reduction of up to 10\% according to a prior master's thesis.
+
+# Data
+I have received an Excel file with all the components of the electronic assembly that are not yet set up as SMD parts. From about 1200 individual parts the number of THT and THR parts together was less than 50.
+
+# Analysis
+I have checked all the components on RoHS compliancy and other technical requirements. Then, taking into account the realibility of the function of the electronic unit, I decided which replacement is feasible.
+
+# Insights
+My conclusion was that it is already possible to further increase the degree of automation, although it was not yet possible to go for a fully automated process with only SMD parts within the next year.

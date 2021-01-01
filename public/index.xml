@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Data Sciene with R</title>
+    <link>/</link>
+    <description>Recent content on Data Sciene with R</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 28 Dec 2020 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Welcome to my blog!</title>
+      <link>/blog/welcome/</link>
+      <pubDate>Mon, 28 Dec 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/blog/welcome/</guid>
+      <description>print(&amp;ldquo;Hello, World!&amp;quot;)</description>
+    </item>
+    
+    <item>
+      <title>About</title>
+      <link>/about/</link>
+      <pubDate>Sun, 27 Dec 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/about/</guid>
+      <description>My name is Marc Sauter and I am a junior data scientist.
+How I found my way into data science The first introductory statistics course I had at university was in year 2015 where I was using an installation of the statistical software R version 3.2.2. In the following semester I found myself joining a master’s course on data science that would ultimately change my thinking. This is where I have picked up strategies to sort my files, have formed the habit of doing frequent backups, and have learned to apply statistical learning techniques.</description>
+    </item>
+    
+    <item>
+      <title>Imprint according to §5 TMG</title>
+      <link>/imprint/</link>
+      <pubDate>Sun, 27 Dec 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/imprint/</guid>
+      <description>Marc Sauter
+Am Silbersegen 12
+38678 Clausthal-Zellerfeld
+Germany</description>
+    </item>
+    
+  </channel>
+</rss>

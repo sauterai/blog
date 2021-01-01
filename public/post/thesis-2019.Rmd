@@ -1,0 +1,25 @@
+---
+title: "Bachelor's thesis from 2019"
+date: "2021-02-19"
+tags: ["thesis","R"]
+slug: "thesis-2019"
+output:
+ blogdown::html_page:
+  highlight: tango
+summary: A summary of my second bachelor's thesis about basic statistics and technical chemistry
+---
+
+# Introduction
+My second bachelor's thesis is a statistical analysis and report about the performance of the polymer simulation program [mcPolymer](https://doi.org/10.3390/polym4031416). The free software, written in C++, was developed by a researcher of the Institute of Technical Chemistry of Clausthal University of Technology in Germany together with his son from the Faculty of Computer Science of Dresden University of Technology. [You can preview and download my thesis in german here.](https://doi.org/10.21268/20190325-0) I was very curious about the inner structure of polymer materials and have decided to research this on my own. Contrary to my expection this did not lead to a following master's program in material sciences but my decision of starting a career in data science!
+
+# Research question
+Initially I was given a total of 3673 independent simulation results of the polymerization of butyl acrylate and it was my task to analyze the data to draw insights from it. The simulations were made up of 5\*10^10 molecules (2673 simulations) each and 1\*10^11 molecules (1000 simulations) each respectively. Simply put, the research question was if it is worth carrying out the more demanding simulations with higher molecule count in respect to calculation time. You have to know that the calculations were made in a cloud environment and it already took about two weeks to get the answers.
+
+# Data
+The data came as .zip files of about 400 megabyte in size, with folders named from sim1 to sim2673 and sim1 to sim1000 respectively. Each folder contained 18 plain text files. I was especially interested in the development of the chain length distributions over time, namely how the polymers were built up from the start of the simulation to 3600 seconds where the reaction end was set. The according .cld files contained some advanced summary data followed by an absoulte frequency distribution of the number of molecules per polymer.
+
+# Analysis
+I have started with some exploratory data analysis in R to get a grasp of how the data inside these files is structured.
+
+# Insights
+While of course a higher molecule count does lead to better simulation results in the nature of monte-carlo simulations, the answer to my research question was that it doesn't pay off to go for higher accuracy in respect to calculation time. This is because the accuracy of the simulations with 5\*10^10 molecules is already very high and much higher than what you get from experimental results in the laboratory.

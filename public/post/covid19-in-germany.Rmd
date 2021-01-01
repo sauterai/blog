@@ -1,0 +1,98 @@
+---
+title: "COVID-19 in Germany"
+date: "2021-03-13"
+tags: ["COVID-19","R"]
+slug: "covid-19-in-germany"
+output:
+ blogdown::html_page:
+  highlight: tango
+summary: An analysis about COVID-19 in Germany from its start to today
+---
+
+# Introduction
+Bla bla bla
+
+```{r}
+getwd()
+setwd("/home/marc/Dokumente/R Projekte/COVID-19 in Germany/")
+
+libs <- c('dplyr', 'tibble',      # wrangling
+          'stringr', 'readr',     # strings, input
+          'lubridate', 'tidyr',   # time, wrangling
+          'knitr', 'kableExtra',  # table styling
+          'ggplot2', 'viridis',   # visuals
+          'gganimate', 'sf',      # animations, maps
+          'ggthemes',             # visuals
+          'transformr')           # added to resolve an error in last line
+invisible(lapply(libs, library, character.only = TRUE))
+
+covid_de <- read_csv("1Datenbasis/covid_de.csv")
+
+shape_county <- st_read(str_c("1Datenbasis/", "de_county.shp"), quiet = TRUE) %>% 
+  rename(county = GEN) %>% 
+  select(county, BEZ, geometry) %>% 
+  mutate(county = as.character(county)) %>% 
+  mutate(county = str_replace_all(county, "ü", "ue")) %>% 
+  mutate(county = str_replace_all(county, "ä", "ae")) %>% 
+  mutate(county = str_replace_all(county, "ö", "oe")) %>% 
+  mutate(county = str_replace_all(county, "ß", "ss")) %>% 
+  mutate(county = str_remove(county, "\\(.+\\)")) %>% 
+  mutate(county = str_trim(county)) %>% 
+  mutate(BEZ = case_when(
+    BEZ == "Kreis" ~ "LK",
+    BEZ == "Landkreis" ~ "LK",
+    BEZ == "Stadtkreis" ~ "SK",
+    BEZ == "Kreisfreie Stadt" ~ "SK"
+  )) %>% 
+  unite(county, BEZ, county, sep = " ", remove = TRUE)
+
+foo <- covid_de %>% 
+  mutate(county = case_when(
+    county == "Region Hannover" ~ "LK Region Hannover",
+    county == "SK Muelheim a.d.Ruhr" ~ "SK Muelheim an der Ruhr",
+    county == "StadtRegion Aachen" ~ "LK Staedteregion Aachen",
+    county == "SK Offenbach" ~ "SK Offenbach am Main",
+    county == "LK Bitburg-Pruem" ~ "LK Eifelkreis Bitburg-Pruem",
+    county == "SK Landau i.d.Pfalz" ~ "SK Landau in der Pfalz",
+    county == "SK Ludwigshafen" ~ "SK Ludwigshafen am Rhein",
+    county == "SK Neustadt a.d.Weinstrasse" ~ "SK Neustadt an der Weinstrasse",
+    county == "SK Freiburg i.Breisgau" ~ "SK Freiburg im Breisgau",
+    county == "LK Landsberg a.Lech" ~ "LK Landsberg am Lech",
+    county == "LK Muehldorf a.Inn" ~ "LK Muehldorf a. Inn",
+    county == "LK Pfaffenhofen a.d.Ilm" ~ "LK Pfaffenhofen a.d. Ilm",
+    county == "SK Weiden i.d.OPf." ~ "SK Weiden i.d. OPf.",
+    county == "LK Neumarkt i.d.OPf." ~ "LK Neumarkt i.d. OPf.",
+    county == "LK Neustadt a.d.Waldnaab" ~ "LK Neustadt a.d. Waldnaab",
+    county == "LK Wunsiedel i.Fichtelgebirge" ~ "LK Wunsiedel i. Fichtelgebirge",
+    county == "LK Neustadt a.d.Aisch-Bad Windsheim" ~ "LK Neustadt a.d. Aisch-Bad Windsheim",
+    county == "LK Dillingen a.d.Donau" ~ "LK Dillingen a.d. Donau",
+    county == "LK Stadtverband Saarbruecken" ~ "LK Regionalverband Saarbruecken",
+    county == "LK Saar-Pfalz-Kreis" ~ "LK Saarpfalz-Kreis",
+    county == "LK Sankt Wendel" ~ "LK St. Wendel",
+    county == "SK Brandenburg a.d.Havel" ~ "SK Brandenburg an der Havel",
+    str_detect(county, "Berlin") ~ "SK Berlin",
+    TRUE ~ county
+  )) %>% 
+  group_by(county, date) %>% 
+  summarise(cases = sum(cases),
+            deaths = sum(deaths)) %>% 
+  ungroup() %>% 
+  complete(county, date, fill = list(cases = 0, deaths = 0)) %>% 
+  group_by(county) %>% 
+  mutate(cumul_cases = cumsum(cases),
+         cumul_deaths = cumsum(deaths)) %>% 
+  ungroup() %>% 
+  filter(between(date, date("2020-03-01"), date("2020-03-31")))
+
+gg <- shape_county %>% 
+  right_join(foo, by = "county") %>% 
+  ggplot(aes(fill = cumul_cases)) +
+  geom_sf() +
+  scale_fill_viridis(trans = "log1p", breaks = c(0, 10, 100, 1000)) +
+  theme_map() +
+  theme(title = element_text(size = 15), legend.text = element_text(size = 12),
+        legend.title = element_text(size = 15)) +
+  labs(title = "Total COVID-19 cases in Germany: {frame_time}", fill = "Cases") +
+  transition_time(date)
+```
+
