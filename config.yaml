@@ -1,7 +1,7 @@
 baseURL: /
 languageCode: en-us
 defaultContentLanguage: en-us
-title: Data Sciene with R
+title: Data Science with R
 theme: hugo-tranquilpeak-theme
 disqusShortname: sauterai
 paginate: 7
@@ -12,7 +12,7 @@ taxonomies:
   archive: archives
   tag: tags
 author:
-  bio: Data Sciene with R
+  bio: Data Science with R
   gravatarEmail: no
   job: Student
   location: Germany
