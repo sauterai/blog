@@ -14,5 +14,5 @@ Am Silbersegen 12<br>
 38678 Clausthal-Zellerfeld<br>
 Germany<br>
 
-info\@replacewithlastname.ai
-
+info\@lastname.ai<br>
+(Please replace 'lastname' with my last name)
