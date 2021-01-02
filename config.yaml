@@ -49,7 +49,7 @@ menu:
     - identifier: xing
       name: Xing
       pre: <i class="sidebar-button-icon fa fa-lg fa-xing"></i>
-      url: https://www.xing.com/profile/Marc_Sauter11
+      url: https://xing.com/profile/Marc_Sauter11
       weight: 2
   misc:
     - identifier: about
