@@ -19,6 +19,6 @@ The first introductory statistics course I had at university was in year 2015 wh
 
 First of all, during the past ten years I have absorbed a lot of information in my studies with only few chances to write about it. I have taken more than hundred exams and begin to realize that I want to start sharing knowledge before I sign my next work contract.
 
-Furthermore, I am writing this blog because I want to keep track of my progression in data science. There are many obstacles to come.
+Furthermore, I am writing this blog because I want to keep track of my progression in data science. There are many obstacles to come as I am always looking for challenges.
 
 Finally, I would like to improve my english communication skills to a native level.
