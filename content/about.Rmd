@@ -13,7 +13,7 @@ My name is Marc Sauter and I am a junior data scientist.
 
 # How I found my way into data science
 
-The first introductory statistics course I had at university was in year 2015 where I was using an installation of the statistical software R version 3.2.2. In the following semester I found myself joining a master's course on data science that would ultimately change my thinking. This is where I have picked up strategies to sort my files, have formed the habit of doing frequent backups, and have learned to apply statistical learning techniques. This was also when I have decided to switch from proprietary Windows to free software GNU Linux as my main operating system.
+The first introductory statistics course I had at university was in year 2015 where I was using an installation of the statistical software R version 3.2.2. In the following semester I found myself joining a master's course in data science that would ultimately change my thinking. This is where I have picked up strategies to sort my files, have formed the habit of doing frequent backups, and have learned to apply statistical learning techniques. This was also when I have decided to switch from proprietary Windows to free software GNU\/Linux as my main operating system.
 
 # Three reasons for writing this blog
 
