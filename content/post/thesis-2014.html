@@ -1,0 +1,72 @@
+---
+title: "First bachelor's thesis from 2014"
+date: "2021-05-09"
+tags: ["thesis","Excel"]
+slug: "thesis-2014"
+output:
+ blogdown::html_page:
+  highlight: tango
+summary: Summary and full-text of my bachelor's thesis about automation in electronics industry
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>During my first study program of Renewable Energies I became especially interested in photovoltaics as the possibilities of implementing this technology are endless. Just think of electric mobility as one emerging trend. My first bachelor’s thesis is a strategic analysis about increasing the degree of automation in the manufacturing process of PV inverters. These devices are needed to convert the obtained direct current to alternating current for end consumer use. I was able to find an excellent work place in the industry leading company SMA Solar Technology AG. <a href="https://doi.org/10.22032/dbt.48671">You can download my thesis in german as a .pdf file here.</a> There is a four-year restriction note applied but the company has explicitly allowed me to publish it at a later point.</p>
+</div>
+<div id="research-question" class="section level1">
+<h1>Research question</h1>
+<p>My main research question was to check if it was possible to fully automate the manufacturing process of a product line of photovolatic inverters. Broadly speaking, the underlying task was to replace as much of the remaining THT parts on the printed circuit boards as possible so that the manufacturing process can be simplified, ideally with SMT parts only. Examples of these technologies can be seen in Figure 1 and Figure 2.</p>
+<table>
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">Fig. 1: Through-hole technology (THT)</th>
+<th align="center">Fig. 2: Surface-mount technology (SMT)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center"><img src="/img/THT.jpg" style="width:100.0%" alt="THT" /></td>
+<td align="center"><img src="/img/SMT.jpg" style="width:100.0%" alt="SMT" /></td>
+</tr>
+</tbody>
+</table>
+<p>The motivation for this is all about higher efficiency and cost reduction. Sometimes it is not advisable to replace a THT part with an SMT part. In these cases, electronic components may be replaced with THR devices, whereas the abbreviation stands for through-hole reflow. These are essentially THT parts but are allowed to be processed via reflow soldering. <a href="https://www.youtube.com/watch?v=gFseaQKFe7U">You might find this video helpful which shows the manufacturing process of printed circuit boards of PV inverters at SMA.</a></p>
+</div>
+<div id="data" class="section level1">
+<h1>Data</h1>
+<p>An Excel file with all the components of the electronic assembly that were not yet set up as SMT parts has been sent to me. From about 1200 individual parts in total there were still 55 THT parts left.</p>
+</div>
+<div id="analysis" class="section level1">
+<h1>Analysis</h1>
+<p>I checked possible replacement components on RoHS II compliancy, their prices and assembly costs, their process capability with the given reflow soldering profile, and their process capability with the automatic placement machines. Then, taking into account the desired reliability of the electronic printed circuit board assembly for more than 20 years, I decided which replacement was feasible.</p>
+<p>Furthermore, I dimensioned an SMT resistor for the use in the photovoltaic inverters. This for I designed my own small printed circuit board and tested different cooling concepts as seen in Figure 3. At the end of the day I also tested Epoxy as coating material which would lead to a noticeable temperature reduction in the future as seen in Figure 4.</p>
+<table>
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">Fig. 3: Printed circuit board for 8 resistors</th>
+<th align="center">Fig. 4: Epoxy-coated and clean resistor</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center"><img src="/img/PCB.jpg" style="width:96.0%" alt="PCB" /></td>
+<td align="center"><img src="/img/IR.jpg" style="width:100.0%" alt="SMT" /></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="insights" class="section level1">
+<h1>Insights</h1>
+<p>The conclusion was that it was already possible to further increase the degree of automation, although because of 16 parts it was not yet possible to go for a fully automated process with SMT parts only by the end of year 2014.</p>
+</div>
