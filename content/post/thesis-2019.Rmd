@@ -1,0 +1,224 @@
+---
+title: "Second bachelor's thesis from 2019"
+date: "2021-05-16"
+tags: ["thesis","R"]
+slug: "thesis-2019"
+output:
+ blogdown::html_page:
+  highlight: tango
+summary: Summary and full-text of my bachelor's thesis about statistics and technical chemistry
+---
+
+# Introduction
+At the start of my second study program of Industrial Engineering I became very curious about the inner structure of polymer materials from a natural sciences point of view. After joining master's courses in advanced statistics and polymerization technology I decided to do an empirical research. In the end I made a public request at my university if there is a chance to connect both topics I was interested in.
+
+My second bachelor's thesis is a statistical analysis about the performance of the polymer simulation program mcPolymer. [You can download my thesis in german as a .pdf file here.](https://doi.org/10.21268/20190325-0) Written in C++, the free software uses Monte-Carlo methods and was developed by a researcher of the Institute of Technical Chemistry of Clausthal University of Technology together with his son from the Faculty of Computer Science of Dresden University of Technology.
+
+Contrary to my expectation this work did not lead to a following master's program in material sciences but my decision of starting a career in data science!
+
+# Theoretical Foundations
+I was given a total of 3673 independent and identically distributed results from the simulated polymerization of butyl acrylate and it was my chosen task to analyze the data using the statistical programming language R to draw insights from it.
+
+The underlying process of homo polymerization to generate these results implies that random chains of polymers are being built up from single monomers through chemical reactions just as seen in Figure 1. This is very simplified because in the case of butyl acrylate there is also a complex branching mechanism added so that at every point of these chains a new branch may start.
+
+My special interest was to compare the total amount of monomers added which is directly proportional to a polymer's total specific weight. This for, the so called molar mass distribution comes in hand. An example is shown in Figure 2 after a simulation time of 3600 seconds. Simply put, the graph shows that getting lightweight polymers from the simulated chemical reactions is very common while getting heavier polymers is much less common.
+
+Fig. 1: Two unbranched polymer chains        |  Fig. 2: Example molar mass distribution after 3600s simulation time
+:-------------------------------------------:|:-------------------------------------------:
+![Polymers](/img/polymers.jpg){width=100%}   |  ![Distribution](/img/distribution.jpg){width=100%}
+
+Furthermore, you can see the two important process parameters number average molar mass and mass average molar mass added as vertical lines in the graph. Together with a third process parameter, the monomer conversion rate, they are used to characterize polymerizations in industry. I was also using these parameters throughout my thesis for easier comparison between many molar mass distributions at once.
+
+# Research question
+The simulations were carried out for 5\*10^10 molecules (2673 simulations) and 1\*10^11 molecules (1000 simulations). My research question was if it is worth to carry out the more demanding simulations with higher molecule count in respect to calculation time. In other words, does it pay off to wait for more exact outcomes?
+
+You have to know at this point that the calculations were made in a cloud environment and it still took about two weeks to get all simulation results, so the answer to this question really has a practical matter for any user of the software in research and industry.
+
+# Data
+The data came as .zip files of about 400 megabytes in size, with folders named from sim1 to sim2673 and sim1 to sim1000, respectively. [The full dataset is availible for download here.](https://github.com/sauterai/thesis-2019/tree/main/1Datenbasis) Each folder contained 18 plain text files. I was especially interested in the development of the chain length distributions over time, namely how the polymers were built up from the start of the simulation to 3600 seconds where the reaction end was set. The according .cld files contained some advanced summary data followed by an absolute frequency distribution of the number of monomers per polymer.
+
+# Analysis
+For the analysis part of this post I will focus on showing R code, so that you can follow what I did to get the two process parameters as seen in Figure 2 and how I used the information to answer my research question. [The full analysis is availible for download here.](https://github.com/sauterai/thesis-2019/tree/main/2Datenauswertung) 
+
+I have started with some exploratory data analysis in R to get a grasp of how the data inside these files is structured. The following code was used to generate the example molar mass distribution from above.
+
+```{r, eval=FALSE}
+M_BuA <- 128.17
+pdf(file = "e11_M_3600.pdf")
+e11.M.3600 <- read.table("1Datenbasis/1e11/sim1/D.3600.0.cld", header=T, skip=6)
+e11.M.3600[,1] <- e11.M.3600[,1]*M_BuA
+plot(e11.M.3600[,1:2], ylab="absolute Häufigkeit", xlab="Molare Masse in g/mol")
+abline(v=7287.53, col="black")
+abline(v=15370.76, col="black")
+text(0, 500000, expression(bar(M[n])), col = "black")
+text(22000, 500000, expression(bar(M[w])), col = "black")
+dev.off()
+```
+
+The next step was to calculate the process parameters for each simulation file-by-file and folder-by-folder via two for loops and to assign the matrix to a variable in the last step.
+
+```{r, eval=FALSE}
+M_BuA <- 128.17
+time <- c(120,600,1200,1800,2400,3000,3600)
+
+filename <- numeric(7)
+for(i in 1:7){
+  filename[i] <- paste("D",time[i],"0","cld",sep=".")  
+}
+
+e11.foldernum <- seq(1,1000,1)
+e11.foldername <- character(1000)
+e11.foldername <- paste("sim",e11.foldernum,sep="")
+e11.MnMw <- numeric(14000)
+counter.values <- 1
+for(e11.j in 1:1000){
+  e11.sim.MnMw <- numeric(14)
+  counter.M <- 1
+    for(i in 1:7){
+      e11.sim.CLD <- read.table(paste("1Datenbasis/1e11/",e11.foldername[e11.j],"/",filename[i],sep=""), header=T, skip=6)
+      e11.sim.Mn <- sum((e11.sim.CLD[,2]*e11.sim.CLD[,1]*M_BuA))/sum(e11.sim.CLD[,2])
+      e11.sim.Mw <- sum(e11.sim.CLD[,2]*(e11.sim.CLD[,1]*M_BuA)^2)/sum(e11.sim.CLD[,1]*e11.sim.CLD[,2]*M_BuA)
+      e11.sim.MnMw[counter.M:(counter.M+1)] <- c(e11.sim.Mn,e11.sim.Mw)
+      counter.M <- counter.M+2
+    }
+  e11.sim.MnMw
+  e11.MnMw[counter.values:(counter.values+13)] <- e11.sim.MnMw
+  counter.values <- counter.values+14
+}
+e11.MnMw <- matrix(e11.MnMw, nrow=1000, ncol=14, byrow=T)
+
+e10.foldernum <- seq(1,2673,1)
+e10.foldername <- character(2673)
+e10.foldername <- paste("sim",e10.foldernum,sep="")
+e10.MnMw <- numeric(37422)
+counter.values <- 1
+for(e10.j in 1:2673){
+  e10.sim.MnMw <- numeric(14)
+  counter.M <- 1
+  for(i in 1:7){
+    e10.sim.CLD <- read.table(paste("1Datenbasis/5e10/",e10.foldername[e10.j],"/",filename[i],sep=""), header=T, skip=6)
+    e10.sim.Mn <- sum((e10.sim.CLD[,2]*e10.sim.CLD[,1]*M_BuA))/sum(e10.sim.CLD[,2])
+    e10.sim.Mw <- sum(e10.sim.CLD[,2]*(e10.sim.CLD[,1]*M_BuA)^2)/sum(e10.sim.CLD[,1]*e10.sim.CLD[,2]*M_BuA)
+    e10.sim.MnMw[counter.M:(counter.M+1)] <- c(e10.sim.Mn,e10.sim.Mw)
+    counter.M <- counter.M+2
+  }
+  e10.sim.MnMw
+  e10.MnMw[counter.values:(counter.values+13)] <- e10.sim.MnMw
+  counter.values <- counter.values+14
+}
+e10.MnMw <- matrix(e10.MnMw, nrow=2673, ncol=14, byrow=T)
+```
+
+Similiar processing steps have been done to calculate the monomer conversion rate as the third process parameter used in industry to characterize polymerizations. Then it was time to visualize the data with boxplots and histograms, here again shown without the monomer conversion rate analysis.
+
+```{r, eval=FALSE}
+pdf(file = "Mn_box.pdf")
+par(mfrow = c(1,3))
+boxplot(e11.MnMw[,3],e10.MnMw[,3], ylim=c(9910,9950), xlab="A", ylab="Zahlenmittel in g/mol", col=c("lightgray","white"))
+boxplot(e11.MnMw[,7],e10.MnMw[,7], ylim=c(8520,8560), xlab="B", ylab="Zahlenmittel in g/mol", col=c("lightgray","white"))
+boxplot(e11.MnMw[,13],e10.MnMw[,13], ylim=c(7270,7310), xlab="C", ylab="Zahlenmittel in g/mol", col=c("lightgray","white"))
+dev.off()
+
+pdf(file = "Mw_box.pdf")
+par(mfrow = c(1,3))
+boxplot(e11.MnMw[,4],e10.MnMw[,4], ylim=c(19760,19840), xlab="A", ylab="Gewichtsmittel in g/mol", col=c("lightgray","white"), yaxt="n")
+axis(2, at=c(19760,19770,19780,19790,19800,19810,19820,19830,19840), labels=c(19760,19770,19780,19790,19800,19810,19820,19830,19840))
+boxplot(e11.MnMw[,8],e10.MnMw[,8], ylim=c(17300,17370), xlab="B", ylab="Gewichtsmittel in g/mol", col=c("lightgray","white"))
+boxplot(e11.MnMw[,14],e10.MnMw[,14], ylim=c(15350,15400), xlab="C", ylab="Gewichtsmittel in g/mol", col=c("lightgray","white"))
+dev.off()
+
+pdf(file="Mn_hist.pdf")
+par(mfrow = c(3,2))
+hist(e11.MnMw[,3], freq=F, breaks=seq(9910,9950,1), xlim=c(9910,9950), ylim=c(0,0.16), main="A: Histogramm nach 600 Sekunden", xlab="Zahlenmittel in g/mol", ylab="Dichte", col="lightgray")
+lines(density(e11.MnMw[,3], kernel="gaussian"))
+hist(e10.MnMw[,3], freq=F, breaks=seq(9910,9950,1), xlim=c(9910,9950), ylim=c(0,0.16), main="A: Histogramm nach 600 Sekunden", xlab="Zahlenmittel in g/mol", ylab="Dichte")
+lines(density(e10.MnMw[,3], kernel="gaussian"))
+hist(e11.MnMw[,7], freq=F, breaks=seq(8520,8560,1), xlim=c(8520,8560), ylim=c(0,0.16), main="B: Histogramm nach 1800 Sekunden", xlab="Zahlenmittel in g/mol",ylab="Dichte", col="lightgray")
+lines(density(e11.MnMw[,7], kernel="gaussian"))
+hist(e10.MnMw[,7], freq=F, breaks=seq(8520,8560,1), xlim=c(8520,8560), ylim=c(0,0.16), main="B: Histogramm nach 1800 Sekunden", xlab="Zahlenmittel in g/mol",ylab="Dichte")
+lines(density(e10.MnMw[,7], kernel="gaussian"))
+hist(e11.MnMw[,13], freq=F, breaks=seq(7270,7300,1), xlim=c(7270,7300), ylim=c(0,0.16), main="C: Histogramm nach 3600 Sekunden", xlab="Zahlenmittel in g/mol",ylab="Dichte", col="lightgray", xaxt="n")
+axis(1, at=c(seq(7270,7300,10)), labels=c(seq(7270,7300,10)))
+lines(density(e11.MnMw[,13], kernel="gaussian"))
+hist(e10.MnMw[,13], freq=F, breaks=seq(7270,7300,1), xlim=c(7270,7300), ylim=c(0,0.16), main="C: Histogramm nach 3600 Sekunden", xlab="Zahlenmittel in g/mol",ylab="Dichte", xaxt="n")
+axis(1, at=c(seq(7270,7300,10)), labels=c(seq(7270,7300,10)))
+lines(density(e10.MnMw[,13], kernel="gaussian"))
+dev.off()
+
+pdf(file="Mw_hist.pdf")
+par(mfrow = c(3,2))
+hist(e11.MnMw[,4], freq=F, breaks=seq(19760,19840,2), xlim=c(19760,19840), ylim=c(0,0.10), main="A: Histogramm nach 600 Sekunden", xlab="Gewichtsmittel in g/mol", ylab="Dichte", col="lightgray", xaxt="n")
+axis(1, at=c(seq(19760,19840,10)), labels=c(seq(19760,19840,10)))
+lines(density(e11.MnMw[,4], kernel="gaussian"))
+hist(e10.MnMw[,4], freq=F, breaks=seq(19760,19840,2), xlim=c(19760,19840), ylim=c(0,0.10), main="A: Histogramm nach 600 Sekunden", xlab="Gewichtsmittel in g/mol", ylab="Dichte", xaxt="n")
+axis(1, at=c(seq(19760,19840,10)), labels=c(seq(19760,19840,10)))
+lines(density(e10.MnMw[,4], kernel="gaussian"))
+hist(e11.MnMw[,8], freq=F, breaks=seq(17300,17370,2), xlim=c(17300,17370), ylim=c(0,0.10), main="B: Histogramm nach 1800 Sekunden", xlab="Gewichtsmittel in g/mol", ylab="Dichte",col="lightgray", xaxt="n")
+axis(1, at=c(seq(17300,17370,10)), labels=c(seq(17300,17370,10)))
+lines(density(e11.MnMw[,8], kernel="gaussian"))
+hist(e10.MnMw[,8], freq=F, breaks=seq(17300,17370,2), xlim=c(17300,17370), ylim=c(0,0.10), main="B: Histogramm nach 1800 Sekunden", xlab="Gewichtsmittel in g/mol", ylab="Dichte", xaxt="n")
+axis(1, at=c(seq(17300,17370,10)), labels=c(seq(17300,17370,10)))
+lines(density(e10.MnMw[,8], kernel="gaussian"))
+hist(e11.MnMw[,14], freq=F, breaks=seq(15340,15400,2), xlim=c(15340,15400), ylim=c(0,0.10), main="C: Histogramm nach 3600 Sekunden", xlab="Gewichtsmittel in g/mol", ylab="Dichte", col="lightgray")
+lines(density(e11.MnMw[,14], kernel="gaussian"))
+hist(e10.MnMw[,14], freq=F, breaks=seq(15340,15400,2), xlim=c(15340,15400), ylim=c(0,0.10), main="C: Histogramm nach 3600 Sekunden", xlab="Gewichtsmittel in g/mol", ylab="Dichte")
+lines(density(e10.MnMw[,14], kernel="gaussian"))
+dev.off()
+```
+
+For the second to last chapter of my thesis I calculated confidence intervals and performed two different statistical tests to validate my findings. Again I will focus on showing the R code instead of the results and neglect the monomer conversion rate analysis.
+
+```{r, eval=FALSE}
+t.test(e11.MnMw[,3])
+set.seed(8462329)
+t.test(e10.MnMw$V3[sample(1:2673, replace=F, size=1000)])
+t.test(e11.MnMw[,7])
+set.seed(2748475)
+t.test(e10.MnMw$V7[sample(1:2673, replace=F, size=1000)])
+t.test(e11.MnMw[,13])
+set.seed(4798412)
+t.test(e10.MnMw$V13[sample(1:2673, replace=F, size=1000)])
+
+t.test(e11.MnMw[,4])
+set.seed(9646379)
+t.test(e10.MnMw$V4[sample(1:2673, replace=F, size=1000)])
+t.test(e11.MnMw[,8])
+set.seed(2542764)
+t.test(e10.MnMw$V8[sample(1:2673, replace=F, size=1000)])
+t.test(e11.MnMw[,14])
+set.seed(8746782)
+t.test(e10.MnMw$V14[sample(1:2673, replace=F, size=1000)])
+
+set.seed(1354865)
+t.test(e11.MnMw[,3],e10.MnMw$V3[sample(1:2673, replace=F, size=1000)])
+set.seed(3486438)
+t.test(e11.MnMw[,7],e10.MnMw$V7[sample(1:2673, replace=F, size=1000)])
+set.seed(4259672)
+t.test(e11.MnMw[,13],e10.MnMw$V13[sample(1:2673, replace=F, size=1000)])
+
+set.seed(6075032)
+t.test(e11.MnMw[,4],e10.MnMw$V4[sample(1:2673, replace=F, size=1000)])
+set.seed(7098745)
+t.test(e11.MnMw[,8],e10.MnMw$V8[sample(1:2673, replace=F, size=1000)])
+set.seed(3206502)
+t.test(e11.MnMw[,14],e10.MnMw$V14[sample(1:2673, replace=F, size=1000)])
+
+set.seed(16374986)
+var.test(e11.MnMw[,3],e10.MnMw$V3[sample(1:2673, replace=F, size=1000)])
+set.seed(2648294)
+var.test(e11.MnMw[,7],e10.MnMw$V7[sample(1:2673, replace=F, size=1000)])
+set.seed(7209384)
+var.test(e11.MnMw[,13],e10.MnMw$V13[sample(1:2673, replace=F, size=1000)])
+
+set.seed(4098321)
+var.test(e11.MnMw[,4],e10.MnMw$V4[sample(1:2673, replace=F, size=1000)])
+set.seed(5137012)
+var.test(e11.MnMw[,8],e10.MnMw$V8[sample(1:2673, replace=F, size=1000)])
+set.seed(6384721)
+var.test(e11.MnMw[,14],e10.MnMw$V14[sample(1:2673, replace=F, size=1000)])
+```
+
+Using graphs and tables I got as output from the analysis, which is covered in depth in the full-text of my thesis linked in the introduction of this post, I was able to draw my insights. 
+
+# Insights
+While of course a higher molecule count does lead to more exact results in the nature of Monte-Carlo simulations, the answer to my research question was that it doesn't pay off to go for higher accuracy in respect to calculation time. This is because the accuracy of the simulations with 5\*10^10 molecules is already very high and much higher than what you get from experimental results in the laboratory.
